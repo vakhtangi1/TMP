@@ -69,6 +69,16 @@ public class TaskController {
         return ResponseEntity.ok(taskService.saveTask(task));
     }
 
+    @PutMapping("/{id}")
+    public ResponseEntity<Task> editTask(@PathVariable Long id, @RequestBody Task task) {
+        return ResponseEntity.ok(taskService.editTask(id, task));
+    }
+
+    @PutMapping("/{id}/complete")
+    public ResponseEntity<Task> markTaskAsCompleted(@PathVariable Long id) {
+        return ResponseEntity.ok(taskService.markTaskAsCompleted(id));
+    }
+
     @GetMapping("/{id}")
     public ResponseEntity<Task> getTaskById(@PathVariable Long id) {
         return taskService.getTaskById(id)

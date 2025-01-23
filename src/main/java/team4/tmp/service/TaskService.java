@@ -40,6 +40,23 @@ public class TaskService {
         return taskRepository.save(task);
     }
 
+    public Task editTask(Long id, Task task) {
+        Task existingTask = taskRepository.findById(id).orElseThrow(() -> new RuntimeException("Task not found"));
+        existingTask.setTitle(task.getTitle());
+        existingTask.setDescription(task.getDescription());
+        existingTask.setDueDate(task.getDueDate());
+        existingTask.setPriority(task.getPriority());
+        existingTask.setStatus(task.getStatus());
+        existingTask.setUser(task.getUser());
+        return taskRepository.save(existingTask);
+    }
+
+    public Task markTaskAsCompleted(Long id) {
+        Task task = taskRepository.findById(id).orElseThrow(() -> new RuntimeException("Task not found"));
+        task.setStatus(Task.Status.COMPLETED);
+        return taskRepository.save(task);
+    }
+
     public Optional<Task> getTaskById(Long id) {
         return taskRepository.findById(id);
     }
