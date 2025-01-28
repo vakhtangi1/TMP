@@ -10,30 +10,35 @@ public class MainViewController {
 
     @FXML
     private TextField usernameField;
-
     @FXML
     private PasswordField passwordField;
-
     @FXML
     private TextField registerUsernameField;
-
     @FXML
     private PasswordField registerPasswordField;
-
     @FXML
     private PasswordField confirmPasswordField;
+    @FXML
+    private TextField titleField;
+    @FXML
+    private TextField descriptionField;
+    @FXML
+    private TextField dueDateField;
+    @FXML
+    private TextField priorityField;
+    @FXML
+    private TextField statusField;
 
     @FXML
     private void handleLogin() {
         String username = usernameField.getText();
         String password = passwordField.getText();
 
-        // Add your login logic here
         if (username.isEmpty() || password.isEmpty()) {
-            showAlert(AlertType.ERROR, "Login Error", "Please enter both username and password.");
+            showAlert("Login Error", "Please enter both username and password.", AlertType.ERROR);
         } else {
-            // Perform login
-            showAlert(AlertType.INFORMATION, "Login Successful", "Welcome, " + username + "!");
+            // Handle login logic here (verify credentials)
+            System.out.println("Logged in with " + username);
         }
     }
 
@@ -43,22 +48,35 @@ public class MainViewController {
         String password = registerPasswordField.getText();
         String confirmPassword = confirmPasswordField.getText();
 
-        // Add your registration logic here
-        if (username.isEmpty() || password.isEmpty() || confirmPassword.isEmpty()) {
-            showAlert(AlertType.ERROR, "Registration Error", "Please fill in all fields.");
-        } else if (!password.equals(confirmPassword)) {
-            showAlert(AlertType.ERROR, "Registration Error", "Passwords do not match.");
+        if (password.equals(confirmPassword)) {
+            // Proceed with registration (e.g., save user to database)
+            System.out.println("User registered: " + username);
         } else {
-            // Perform registration
-            showAlert(AlertType.INFORMATION, "Registration Successful", "User " + username + " registered successfully!");
+            showAlert("Registration Error", "Passwords do not match.", AlertType.ERROR);
         }
     }
 
-    private void showAlert(AlertType alertType, String title, String message) {
-        Alert alert = new Alert(alertType);
+    @FXML
+    private void handleCreateTask() {
+        String title = titleField.getText();
+        String description = descriptionField.getText();
+        String dueDate = dueDateField.getText();
+        String priority = priorityField.getText();
+        String status = statusField.getText();
+
+        if (title.isEmpty() || description.isEmpty()) {
+            showAlert("Task Creation Error", "Please fill out all required fields.", AlertType.ERROR);
+        } else {
+            // Handle task creation logic here (e.g., save task to database)
+            System.out.println("Task created: " + title);
+        }
+    }
+
+    private void showAlert(String title, String content, AlertType type) {
+        Alert alert = new Alert(type);
         alert.setTitle(title);
         alert.setHeaderText(null);
-        alert.setContentText(message);
+        alert.setContentText(content);
         alert.showAndWait();
     }
 }

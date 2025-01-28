@@ -2,6 +2,7 @@ package team4.tmp.model;
 
 import jakarta.persistence.*;
 import java.time.LocalDate;
+import java.util.List;
 
 @Entity
 public class Task {
@@ -10,24 +11,36 @@ public class Task {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(nullable = false)
     private String title;
-
     private String description;
-
     private LocalDate dueDate;
-
-    @Enumerated(EnumType.STRING)
-    @Column(nullable = false)
     private Priority priority;
-
-    @Enumerated(EnumType.STRING)
-    @Column(nullable = false)
     private Status status;
 
     @ManyToOne
-    @JoinColumn(name = "user_id", nullable = false)
     private User user;
+
+    // Enum for Task Priority
+    public enum Priority {
+        LOW, MEDIUM, HIGH
+    }
+
+    // Enum for Task Status
+    public enum Status {
+        PENDING, IN_PROGRESS, COMPLETED
+    }
+
+    // Default constructor
+    public Task() {}
+
+    // Constructor with parameters
+    public Task(String title, String description, String dueDate, String priority, String status) {
+        this.title = title;
+        this.description = description;
+        this.dueDate = LocalDate.parse(dueDate);  // Convert string to LocalDate
+        this.priority = Priority.valueOf(priority.toUpperCase());  // Convert string to Priority enum
+        this.status = Status.valueOf(status.toUpperCase());  // Convert string to Status enum
+    }
 
     // Getters and Setters
     public Long getId() {
@@ -76,24 +89,5 @@ public class Task {
 
     public void setStatus(Status status) {
         this.status = status;
-    }
-
-    public User getUser() {
-        return user;
-    }
-
-    public void setUser(User user) {
-        this.user = user;
-    }
-
-    public enum Priority {
-        LOW,
-        MEDIUM,
-        HIGH
-    }
-
-    public enum Status {
-        PENDING,
-        COMPLETED
     }
 }
