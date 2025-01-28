@@ -1,46 +1,71 @@
 package team4.tmp.service;
 
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
 import team4.tmp.model.Task;
+import team4.tmp.repository.TaskRepository;
 
-import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
+@Service
 public class TaskService {
 
-    // List to store tasks in memory
-    private List<Task> tasks = new ArrayList<>();
+    private final TaskRepository taskRepository;
 
-    // Create Task
+    @Autowired
+    public TaskService(TaskRepository taskRepository) {
+        this.taskRepository = taskRepository;
+    }
+
+    // Create a new task
     public Task createTask(Task task) {
-        tasks.add(task); // Add task to the list
-        return task;
+        return taskRepository.save(task);
     }
 
-    // Get All Tasks
+    // Get all tasks
     public List<Task> getAllTasks() {
-        return tasks;
+        return taskRepository.findAll();
     }
 
-    // Delete Task by ID
+    // Delete a task by ID
     public boolean deleteTask(Long taskId) {
-        return tasks.removeIf(task -> task.getId().equals(taskId)); // Remove task by ID
+        Optional<Task> task = taskRepository.findById(taskId);
+        if (task.isPresent()) {
+            taskRepository.delete(task.get());
+            return true;
+        }
+        return false;
     }
 
-    // Update Task
+    // Update an existing task
     public Task updateTask(Long taskId, Task updatedTask) {
-        Task existingTask = tasks.stream()
-                .filter(task -> task.getId().equals(taskId))
-                .findFirst()
-                .orElse(null);
-
-        if (existingTask != null) {
-            existingTask.setTitle(updatedTask.getTitle());
-            existingTask.setDescription(updatedTask.getDescription());
-            existingTask.setDueDate(updatedTask.getDueDate());
-            existingTask.setPriority(updatedTask.getPriority());
-            existingTask.setStatus(updatedTask.getStatus());
-            return existingTask;
+        Optional<Task> existingTask = taskRepository.findById(taskId);
+        if (existingTask.isPresent()) {
+            Task task = existingTask.get();
+            task.setTitle(updatedTask.getTitle());
+            task.setDescription(updatedTask.getDescription());
+            task.setDueDate(updatedTask.getDueDate());
+            task.setPriority(updatedTask.getPriority());
+            task.setStatus(updatedTask.getStatus());
+            return taskRepository.save(task);
         }
         return null;
+    }
+
+    // Custom method to find tasks by status
+    public List<Task> findTasksByStatus(String status) {
+        return taskRepository.findByStatus(status);
+    }
+
+    // Custom method to find tasks by priority and due date
+    public List<Task> findTasksByPriorityAndDueDateBefore(String priority, String dueDate) {
+        return taskRepository.findTasksByPriorityAndDueDateBefore(priority, dueDate);
+    }
+
+    // Custom method to update task status
+    public boolean updateTaskStatus(Long taskId, String status) {
+        int updatedRows = taskRepository.updateTaskStatus(status, taskId);
+        return updatedRows > 0;
     }
 }

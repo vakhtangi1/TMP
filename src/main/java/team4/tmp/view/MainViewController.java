@@ -1,23 +1,30 @@
 package team4.tmp.view;
 
 import javafx.fxml.FXML;
-import javafx.scene.control.PasswordField;
-import javafx.scene.control.TextField;
 import javafx.scene.control.Alert;
 import javafx.scene.control.Alert.AlertType;
+import javafx.scene.control.PasswordField;
+import javafx.scene.control.TextField;
+import team4.tmp.model.Task;  // Updated import for Task model
+import java.time.LocalDate;  // For handling date input
 
 public class MainViewController {
 
+    // Login Section
     @FXML
     private TextField usernameField;
     @FXML
     private PasswordField passwordField;
+
+    // Register Section
     @FXML
     private TextField registerUsernameField;
     @FXML
     private PasswordField registerPasswordField;
     @FXML
     private PasswordField confirmPasswordField;
+
+    // Task Creation Section
     @FXML
     private TextField titleField;
     @FXML
@@ -29,54 +36,87 @@ public class MainViewController {
     @FXML
     private TextField statusField;
 
+    // Login button handler
     @FXML
-    private void handleLogin() {
+    public void handleLogin() {
         String username = usernameField.getText();
         String password = passwordField.getText();
-
-        if (username.isEmpty() || password.isEmpty()) {
-            showAlert("Login Error", "Please enter both username and password.", AlertType.ERROR);
-        } else {
-            // Handle login logic here (verify credentials)
-            System.out.println("Logged in with " + username);
-        }
+        // Simulate a login check
+        Alert alert = new Alert(AlertType.INFORMATION);
+        alert.setTitle("Login Information");
+        alert.setHeaderText(null);
+        alert.setContentText("Login successful for user: " + username);
+        alert.showAndWait();
     }
 
+    // Register button handler
     @FXML
-    private void handleRegister() {
+    public void handleRegister() {
         String username = registerUsernameField.getText();
         String password = registerPasswordField.getText();
         String confirmPassword = confirmPasswordField.getText();
 
-        if (password.equals(confirmPassword)) {
-            // Proceed with registration (e.g., save user to database)
-            System.out.println("User registered: " + username);
+        if (!password.equals(confirmPassword)) {
+            Alert alert = new Alert(AlertType.ERROR);
+            alert.setTitle("Error");
+            alert.setHeaderText(null);
+            alert.setContentText("Passwords do not match!");
+            alert.showAndWait();
         } else {
-            showAlert("Registration Error", "Passwords do not match.", AlertType.ERROR);
+            // Simulate a successful registration
+            Alert alert = new Alert(AlertType.INFORMATION);
+            alert.setTitle("Registration Information");
+            alert.setHeaderText(null);
+            alert.setContentText("Registration successful for user: " + username);
+            alert.showAndWait();
         }
     }
 
+    // Create Task button handler
     @FXML
-    private void handleCreateTask() {
+    public void handleCreateTask() {
         String title = titleField.getText();
         String description = descriptionField.getText();
         String dueDate = dueDateField.getText();
         String priority = priorityField.getText();
         String status = statusField.getText();
 
-        if (title.isEmpty() || description.isEmpty()) {
-            showAlert("Task Creation Error", "Please fill out all required fields.", AlertType.ERROR);
-        } else {
-            // Handle task creation logic here (e.g., save task to database)
-            System.out.println("Task created: " + title);
-        }
-    }
+        try {
+            // Validate and parse the due date
+            if (dueDate == null || dueDate.trim().isEmpty()) {
+                throw new IllegalArgumentException("Due date cannot be empty");
+            }
 
-    private void showAlert(String title, String content, AlertType type) {
-        Alert alert = new Alert(type);
-        alert.setTitle(title);
-        alert.setHeaderText(null);
-        alert.setContentText(content);
-        alert.showAndWait();
+            // Converting String to LocalDate (added validation)
+            LocalDate dueDateParsed = LocalDate.parse(dueDate);  // This assumes the format is YYYY-MM-DD
+
+            Task task = new Task();  // Create a Task object
+            task.setTitle(title);
+            task.setDescription(description);
+            task.setDueDate(dueDateParsed);  // Set the due date
+            task.setPriority(priority);
+            task.setStatus(status);
+
+            // Simulate creating a task
+            Alert alert = new Alert(AlertType.INFORMATION);
+            alert.setTitle("Task Created");
+            alert.setHeaderText(null);
+            alert.setContentText("Task created successfully!\nTitle: " + title);
+            alert.showAndWait();
+        } catch (IllegalArgumentException e) {
+            // Handle empty due date error
+            Alert alert = new Alert(AlertType.ERROR);
+            alert.setTitle("Error");
+            alert.setHeaderText(null);
+            alert.setContentText("Due date cannot be empty.");
+            alert.showAndWait();
+        } catch (Exception e) {
+            // Handle invalid date format or other errors
+            Alert alert = new Alert(AlertType.ERROR);
+            alert.setTitle("Error");
+            alert.setHeaderText(null);
+            alert.setContentText("Invalid date format. Please use YYYY-MM-DD.");
+            alert.showAndWait();
+        }
     }
 }

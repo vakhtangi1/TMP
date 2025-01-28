@@ -2,7 +2,6 @@ package team4.tmp.model;
 
 import jakarta.persistence.*;
 import java.time.LocalDate;
-import java.util.List;
 
 @Entity
 public class Task {
@@ -13,36 +12,14 @@ public class Task {
 
     private String title;
     private String description;
-    private LocalDate dueDate;
-    private Priority priority;
-    private Status status;
 
-    @ManyToOne
-    private User user;
+    @Column(name = "due_date")
+    private LocalDate dueDate; // Ensure this is LocalDate type
 
-    // Enum for Task Priority
-    public enum Priority {
-        LOW, MEDIUM, HIGH
-    }
+    private String priority;
+    private String status;
 
-    // Enum for Task Status
-    public enum Status {
-        PENDING, IN_PROGRESS, COMPLETED
-    }
-
-    // Default constructor
-    public Task() {}
-
-    // Constructor with parameters
-    public Task(String title, String description, String dueDate, String priority, String status) {
-        this.title = title;
-        this.description = description;
-        this.dueDate = LocalDate.parse(dueDate);  // Convert string to LocalDate
-        this.priority = Priority.valueOf(priority.toUpperCase());  // Convert string to Priority enum
-        this.status = Status.valueOf(status.toUpperCase());  // Convert string to Status enum
-    }
-
-    // Getters and Setters
+    // Getters and setters
     public Long getId() {
         return id;
     }
@@ -75,19 +52,19 @@ public class Task {
         this.dueDate = dueDate;
     }
 
-    public Priority getPriority() {
+    public String getPriority() {
         return priority;
     }
 
-    public void setPriority(Priority priority) {
+    public void setPriority(String priority) {
         this.priority = priority;
     }
 
-    public Status getStatus() {
+    public String getStatus() {
         return status;
     }
 
-    public void setStatus(Status status) {
+    public void setStatus(String status) {
         this.status = status;
     }
 }

@@ -1,42 +1,56 @@
 package team4.tmp.controller;
 
-import javafx.fxml.FXML;
-import javafx.scene.control.Alert;
-import javafx.scene.control.Alert.AlertType;
-import javafx.scene.control.TableView;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.web.bind.annotation.*;
 import team4.tmp.model.Task;
 import team4.tmp.service.TaskService;
 
+import java.util.List;
+
+@RestController
+@RequestMapping("/tasks")
 public class TaskController {
 
-    @FXML
-    private TableView<Task> taskTable;
+    private final TaskService taskService;
 
-    private TaskService taskService = new TaskService();
-
-    // Handle delete task operation
-    @FXML
-    private void handleDeleteTask() {
-        Task selectedTask = taskTable.getSelectionModel().getSelectedItem();
-        if (selectedTask != null) {
-            boolean success = taskService.deleteTask(selectedTask.getId());
-            if (success) {
-                taskTable.getItems().remove(selectedTask); // Remove from table
-                showAlert("Task Deleted", "The task has been successfully deleted!", AlertType.INFORMATION);
-            } else {
-                showAlert("Error", "Task deletion failed", AlertType.ERROR);
-            }
-        } else {
-            showAlert("No Selection", "Please select a task to delete.", AlertType.WARNING);
-        }
+    @Autowired
+    public TaskController(TaskService taskService) {
+        this.taskService = taskService;
     }
 
-    // Helper method to show alerts
-    private void showAlert(String title, String message, AlertType type) {
-        Alert alert = new Alert(type);
-        alert.setTitle(title);
-        alert.setHeaderText(null);
-        alert.setContentText(message);
-        alert.showAndWait();
+    // Get all tasks
+    @GetMapping
+    public List<Task> getAllTasks() {
+        return taskService.getAllTasks();
+    }
+
+    // Get tasks by status
+    @GetMapping("/status/{status}")
+    public List<Task> getTasksByStatus(@PathVariable String status) {
+        return taskService.findTasksByStatus(status);
+    }
+
+    // Create a task
+    @PostMapping
+    public Task createTask(@RequestBody Task task) {
+        return taskService.createTask(task);
+    }
+
+    // Update a task
+    @PutMapping("/{taskId}")
+    public Task updateTask(@PathVariable Long taskId, @RequestBody Task updatedTask) {
+        return taskService.updateTask(taskId, updatedTask);
+    }
+
+    // Delete a task
+    @DeleteMapping("/{taskId}")
+    public boolean deleteTask(@PathVariable Long taskId) {
+        return taskService.deleteTask(taskId);
+    }
+
+    // Update task status
+    @PatchMapping("/{taskId}/status/{status}")
+    public boolean updateTaskStatus(@PathVariable Long taskId, @PathVariable String status) {
+        return taskService.updateTaskStatus(taskId, status);
     }
 }

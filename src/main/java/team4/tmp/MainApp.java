@@ -3,7 +3,7 @@ package team4.tmp;
 import javafx.application.Application;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Scene;
-import javafx.scene.layout.StackPane;
+import javafx.scene.layout.VBox;  // Updated to match MainView.fxml layout
 import javafx.stage.Stage;
 
 public class MainApp extends Application {
@@ -11,10 +11,10 @@ public class MainApp extends Application {
     @Override
     public void start(Stage primaryStage) throws Exception {
         // Load the FXML file for the main view
-        FXMLLoader loader = new FXMLLoader(getClass().getResource("/path/to/your/fxml/MainView.fxml"));
+        FXMLLoader loader = new FXMLLoader(getClass().getResource("/fxml/MainView.fxml"));
 
         // Load the layout from FXML
-        StackPane root = loader.load();
+        VBox root = loader.load();  // Changed to VBox
 
         // Set the stage title
         primaryStage.setTitle("Task Management Portal");
