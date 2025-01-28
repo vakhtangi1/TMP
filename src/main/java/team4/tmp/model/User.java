@@ -1,7 +1,7 @@
 package team4.tmp.model;
 
 import jakarta.persistence.*;
-import java.util.List;
+import java.util.Set;
 
 @Entity
 public class User {
@@ -10,16 +10,12 @@ public class User {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(nullable = false, unique = true)
     private String username;
 
-    @Column(nullable = false)
-    private String password;
-
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
-    private List<Task> tasks;
+    private Set<Task> tasks; // Ensure this is a Set or List
 
-    // Getters and Setters
+    // Getters and setters
     public Long getId() {
         return id;
     }
@@ -36,19 +32,11 @@ public class User {
         this.username = username;
     }
 
-    public String getPassword() {
-        return password;
-    }
-
-    public void setPassword(String password) {
-        this.password = password;
-    }
-
-    public List<Task> getTasks() {
+    public Set<Task> getTasks() {
         return tasks;
     }
 
-    public void setTasks(List<Task> tasks) {
+    public void setTasks(Set<Task> tasks) {
         this.tasks = tasks;
     }
 }

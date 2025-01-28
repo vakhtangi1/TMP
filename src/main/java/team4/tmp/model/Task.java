@@ -19,6 +19,10 @@ public class Task {
     private String priority;
     private String status;
 
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "user_id") // This will create a foreign key column in Task table
+    private User user; // Add this field to establish relationship
+
     // Getters and setters
     public Long getId() {
         return id;
@@ -66,5 +70,13 @@ public class Task {
 
     public void setStatus(String status) {
         this.status = status;
+    }
+
+    public User getUser() {
+        return user;
+    }
+
+    public void setUser(User user) {
+        this.user = user;
     }
 }

@@ -14,7 +14,7 @@
     <children>
         <!-- Login Section -->
         <Label text="Login" style="-fx-font-size: 24px;"/>
-        <GridPane hgap="10" vgap="10" padding="10">
+        <GridPane hgap="10" vgap="10" padding="10, 10, 10, 10">
             <columnConstraints>
                 <ColumnConstraints halignment="RIGHT"/>
                 <ColumnConstraints halignment="LEFT"/>
@@ -38,7 +38,7 @@
 
         <!-- Register Section -->
         <Label text="Register" style="-fx-font-size: 24px;"/>
-        <GridPane hgap="10" vgap="10" padding="10">
+        <GridPane hgap="10" vgap="10" padding="Insets top=10 right=10 bottom=10 left=10">
             <columnConstraints>
                 <ColumnConstraints halignment="RIGHT"/>
                 <ColumnConstraints halignment="LEFT"/>
@@ -65,7 +65,7 @@
         <Label text="Create Task" style="-fx-font-size: 24px;"/>
 
         <!-- Task Creation Section -->
-        <GridPane hgap="10" vgap="10" padding="10">
+        <GridPane hgap="10" vgap="10" padding="Insets top=10 right=10 bottom=10 left=10">
             <columnConstraints>
                 <ColumnConstraints halignment="RIGHT"/>
                 <ColumnConstraints halignment="LEFT"/>
