@@ -25,38 +25,27 @@
                 </image>
             </ImageView>
 
-            <VBox alignment="CENTER_RIGHT" spacing="15">
-                <!-- Login Section -->
-                <Label text="Login" style="-fx-font-size: 24px; -fx-text-fill: white;" />
-                <GridPane hgap="10" vgap="10" alignment="CENTER_RIGHT">
-                    <padding>
-                        <Insets top="10" right="10" bottom="10" left="10"/>
-                    </padding>
-                    <children>
-                        <Label text="Username:" GridPane.rowIndex="0" GridPane.columnIndex="0" style="-fx-text-fill: white;" />
-                        <TextField fx:id="usernameField" GridPane.rowIndex="0" GridPane.columnIndex="1" />
-                        <Label text="Password:" GridPane.rowIndex="1" GridPane.columnIndex="0" style="-fx-text-fill: white;" />
-                        <PasswordField fx:id="passwordField" GridPane.rowIndex="1" GridPane.columnIndex="1" />
-                        <Button text="Login" onAction="#handleLogin" GridPane.rowIndex="2" GridPane.columnIndex="1" />
-                    </children>
-                </GridPane>
-
-                <!-- Register Section -->
-                <Label text="Register" style="-fx-font-size: 24px; -fx-text-fill: white;" />
-                <GridPane hgap="10" vgap="10" alignment="CENTER_RIGHT">
-                    <padding>
-                        <Insets top="10" right="10" bottom="10" left="10"/>
-                    </padding>
-                    <children>
-                        <Label text="Username:" GridPane.rowIndex="0" GridPane.columnIndex="0" style="-fx-text-fill: white;" />
-                        <TextField fx:id="registerUsernameField" GridPane.rowIndex="0" GridPane.columnIndex="1" />
-                        <Label text="Password:" GridPane.rowIndex="1" GridPane.columnIndex="0" style="-fx-text-fill: white;" />
-                        <PasswordField fx:id="registerPasswordField" GridPane.rowIndex="1" GridPane.columnIndex="1" />
-                        <Label text="Confirm Password:" GridPane.rowIndex="2" GridPane.columnIndex="0" style="-fx-text-fill: white;" />
-                        <PasswordField fx:id="confirmPasswordField" GridPane.rowIndex="2" GridPane.columnIndex="1" />
-                        <Button text="Register" onAction="#handleRegister" GridPane.rowIndex="3" GridPane.columnIndex="1" />
-                    </children>
-                </GridPane>
+            <VBox alignment="CENTER" spacing="15">
+                <!-- Login/Register Section -->
+                <VBox fx:id="loginRegisterSection" alignment="CENTER" spacing="15">
+                    <Label fx:id="formTitle" text="Login" style="-fx-font-size: 24px; -fx-text-fill: white;" alignment="CENTER" />
+                    <GridPane hgap="10" vgap="10" alignment="CENTER">
+                        <padding>
+                            <Insets top="10" right="10" bottom="10" left="10"/>
+                        </padding>
+                        <children>
+                            <Label fx:id="usernameLabel" text="Username:" GridPane.rowIndex="0" GridPane.columnIndex="0" style="-fx-text-fill: white;" />
+                            <TextField fx:id="usernameField" GridPane.rowIndex="0" GridPane.columnIndex="1" />
+                            <Label fx:id="passwordLabel" text="Password:" GridPane.rowIndex="1" GridPane.columnIndex="0" style="-fx-text-fill: white;" />
+                            <PasswordField fx:id="passwordField" GridPane.rowIndex="1" GridPane.columnIndex="1" />
+                            <Label fx:id="confirmPasswordLabel" text="Confirm Password:" GridPane.rowIndex="2" GridPane.columnIndex="0" style="-fx-text-fill: white;" visible="false" managed="false" />
+                            <PasswordField fx:id="confirmPasswordField" GridPane.rowIndex="2" GridPane.columnIndex="1" visible="false" managed="false" />
+                            <Button fx:id="submitButton" text="Login" onAction="#handleLogin" GridPane.rowIndex="3" GridPane.columnIndex="1" GridPane.halignment="CENTER" style="-fx-background-color: lightblue; -fx-pref-width: 200px;" />
+                            <Label fx:id="toggleText" text="Don't have an account?" GridPane.rowIndex="4" GridPane.columnIndex="1" style="-fx-text-fill: white;" />
+                            <Button fx:id="toggleButton" text="Register" onAction="#showRegister" GridPane.rowIndex="5" GridPane.columnIndex="1" GridPane.halignment="CENTER" style="-fx-background-color: lightblue; -fx-pref-width: 200px;" />
+                        </children>
+                    </GridPane>
+                </VBox>
             </VBox>
         </HBox>
     </children>
