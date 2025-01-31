@@ -3,7 +3,7 @@ package team4.tmp.view;
 import javafx.application.Application;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Scene;
-import javafx.scene.layout.AnchorPane;
+import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
 
 public class TMPapplicationUI extends Application {
@@ -13,7 +13,7 @@ public class TMPapplicationUI extends Application {
         try {
             // Load the FXML file
             FXMLLoader loader = new FXMLLoader(getClass().getResource("/fxml/MainView.fxml"));
-            AnchorPane root = loader.load();
+            VBox root = loader.load();
 
             // Set up the scene
             Scene scene = new Scene(root);

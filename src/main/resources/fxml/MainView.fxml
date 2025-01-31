@@ -5,91 +5,59 @@
 <?import javafx.scene.control.Label?>
 <?import javafx.scene.control.PasswordField?>
 <?import javafx.scene.control.TextField?>
+<?import javafx.scene.image.Image?>
+<?import javafx.scene.image.ImageView?>
 <?import javafx.scene.layout.GridPane?>
+<?import javafx.scene.layout.HBox?>
 <?import javafx.scene.layout.VBox?>
-<?import javafx.scene.layout.ColumnConstraints?>
-<?import javafx.scene.layout.RowConstraints?>
 
-<VBox xmlns:fx="http://javafx.com/fxml" fx:controller="team4.tmp.view.MainViewController" spacing="15" alignment="CENTER" padding="20">
+<VBox xmlns:fx="http://javafx.com/fxml" fx:controller="team4.tmp.view.MainViewController" spacing="15" alignment="TOP_CENTER" style="-fx-background-color: black;">
+    <padding>
+        <Insets top="20" right="20" bottom="20" left="20"/>
+    </padding>
     <children>
-        <!-- Login Section -->
-        <Label text="Login" style="-fx-font-size: 24px;"/>
-        <GridPane hgap="10" vgap="10" padding="10, 10, 10, 10">
-            <columnConstraints>
-                <ColumnConstraints halignment="RIGHT"/>
-                <ColumnConstraints halignment="LEFT"/>
-            </columnConstraints>
-            <rowConstraints>
-                <RowConstraints valignment="CENTER"/>
-                <RowConstraints valignment="CENTER"/>
-                <RowConstraints valignment="CENTER"/>
-            </rowConstraints>
-            <children>
-                <Label text="Username:" GridPane.rowIndex="0" GridPane.columnIndex="0"/>
-                <TextField fx:id="usernameField" GridPane.rowIndex="0" GridPane.columnIndex="1"/>
-                <Label text="Password:" GridPane.rowIndex="1" GridPane.columnIndex="0"/>
-                <PasswordField fx:id="passwordField" GridPane.rowIndex="1" GridPane.columnIndex="1"/>
-                <Button text="Login" onAction="#handleLogin" GridPane.rowIndex="2" GridPane.columnIndex="1"/>
-            </children>
-        </GridPane>
+        <Label text="Welcome to Task Management Portal" style="-fx-font-size: 28px; -fx-font-weight: bold; -fx-text-fill: white;" alignment="CENTER" />
 
-        <!-- Separator -->
-        <Label text="or" style="-fx-font-size: 18px;"/>
+        <HBox spacing="20" alignment="CENTER">
+            <ImageView fx:id="logoImageView" fitWidth="250" fitHeight="250" pickOnBounds="true" preserveRatio="true">
+                <image>
+                    <Image url="@/images/logo.jpeg" />
+                </image>
+            </ImageView>
 
-        <!-- Register Section -->
-        <Label text="Register" style="-fx-font-size: 24px;"/>
-        <GridPane hgap="10" vgap="10" padding="Insets top=10 right=10 bottom=10 left=10">
-            <columnConstraints>
-                <ColumnConstraints halignment="RIGHT"/>
-                <ColumnConstraints halignment="LEFT"/>
-            </columnConstraints>
-            <rowConstraints>
-                <RowConstraints valignment="CENTER"/>
-                <RowConstraints valignment="CENTER"/>
-                <RowConstraints valignment="CENTER"/>
-                <RowConstraints valignment="CENTER"/>
-                <RowConstraints valignment="CENTER"/>
-            </rowConstraints>
-            <children>
-                <Label text="Username:" GridPane.rowIndex="0" GridPane.columnIndex="0"/>
-                <TextField fx:id="registerUsernameField" GridPane.rowIndex="0" GridPane.columnIndex="1"/>
-                <Label text="Password:" GridPane.rowIndex="1" GridPane.columnIndex="0"/>
-                <PasswordField fx:id="registerPasswordField" GridPane.rowIndex="1" GridPane.columnIndex="1"/>
-                <Label text="Confirm Password:" GridPane.rowIndex="2" GridPane.columnIndex="0"/>
-                <PasswordField fx:id="confirmPasswordField" GridPane.rowIndex="2" GridPane.columnIndex="1"/>
-                <Button text="Register" onAction="#handleRegister" GridPane.rowIndex="3" GridPane.columnIndex="1"/>
-            </children>
-        </GridPane>
+            <VBox alignment="CENTER_RIGHT" spacing="15">
+                <!-- Login Section -->
+                <Label text="Login" style="-fx-font-size: 24px; -fx-text-fill: white;" />
+                <GridPane hgap="10" vgap="10" alignment="CENTER_RIGHT">
+                    <padding>
+                        <Insets top="10" right="10" bottom="10" left="10"/>
+                    </padding>
+                    <children>
+                        <Label text="Username:" GridPane.rowIndex="0" GridPane.columnIndex="0" style="-fx-text-fill: white;" />
+                        <TextField fx:id="usernameField" GridPane.rowIndex="0" GridPane.columnIndex="1" />
+                        <Label text="Password:" GridPane.rowIndex="1" GridPane.columnIndex="0" style="-fx-text-fill: white;" />
+                        <PasswordField fx:id="passwordField" GridPane.rowIndex="1" GridPane.columnIndex="1" />
+                        <Button text="Login" onAction="#handleLogin" GridPane.rowIndex="2" GridPane.columnIndex="1" />
+                    </children>
+                </GridPane>
 
-        <!-- Separator -->
-        <Label text="Create Task" style="-fx-font-size: 24px;"/>
-
-        <!-- Task Creation Section -->
-        <GridPane hgap="10" vgap="10" padding="Insets top=10 right=10 bottom=10 left=10">
-            <columnConstraints>
-                <ColumnConstraints halignment="RIGHT"/>
-                <ColumnConstraints halignment="LEFT"/>
-            </columnConstraints>
-            <rowConstraints>
-                <RowConstraints valignment="CENTER"/>
-                <RowConstraints valignment="CENTER"/>
-                <RowConstraints valignment="CENTER"/>
-                <RowConstraints valignment="CENTER"/>
-                <RowConstraints valignment="CENTER"/>
-            </rowConstraints>
-            <children>
-                <Label text="Title:" GridPane.rowIndex="0" GridPane.columnIndex="0"/>
-                <TextField fx:id="titleField" GridPane.rowIndex="0" GridPane.columnIndex="1"/>
-                <Label text="Description:" GridPane.rowIndex="1" GridPane.columnIndex="0"/>
-                <TextField fx:id="descriptionField" GridPane.rowIndex="1" GridPane.columnIndex="1"/>
-                <Label text="Due Date:" GridPane.rowIndex="2" GridPane.columnIndex="0"/>
-                <TextField fx:id="dueDateField" GridPane.rowIndex="2" GridPane.columnIndex="1"/>
-                <Label text="Priority:" GridPane.rowIndex="3" GridPane.columnIndex="0"/>
-                <TextField fx:id="priorityField" GridPane.rowIndex="3" GridPane.columnIndex="1"/>
-                <Label text="Status:" GridPane.rowIndex="4" GridPane.columnIndex="0"/>
-                <TextField fx:id="statusField" GridPane.rowIndex="4" GridPane.columnIndex="1"/>
-                <Button text="Create Task" onAction="#handleCreateTask" GridPane.rowIndex="5" GridPane.columnIndex="1"/>
-            </children>
-        </GridPane>
+                <!-- Register Section -->
+                <Label text="Register" style="-fx-font-size: 24px; -fx-text-fill: white;" />
+                <GridPane hgap="10" vgap="10" alignment="CENTER_RIGHT">
+                    <padding>
+                        <Insets top="10" right="10" bottom="10" left="10"/>
+                    </padding>
+                    <children>
+                        <Label text="Username:" GridPane.rowIndex="0" GridPane.columnIndex="0" style="-fx-text-fill: white;" />
+                        <TextField fx:id="registerUsernameField" GridPane.rowIndex="0" GridPane.columnIndex="1" />
+                        <Label text="Password:" GridPane.rowIndex="1" GridPane.columnIndex="0" style="-fx-text-fill: white;" />
+                        <PasswordField fx:id="registerPasswordField" GridPane.rowIndex="1" GridPane.columnIndex="1" />
+                        <Label text="Confirm Password:" GridPane.rowIndex="2" GridPane.columnIndex="0" style="-fx-text-fill: white;" />
+                        <PasswordField fx:id="confirmPasswordField" GridPane.rowIndex="2" GridPane.columnIndex="1" />
+                        <Button text="Register" onAction="#handleRegister" GridPane.rowIndex="3" GridPane.columnIndex="1" />
+                    </children>
+                </GridPane>
+            </VBox>
+        </HBox>
     </children>
 </VBox>
