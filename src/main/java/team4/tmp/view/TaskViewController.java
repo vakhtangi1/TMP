@@ -5,6 +5,7 @@ import javafx.scene.control.CheckBox;
 import javafx.scene.control.Label;
 import javafx.scene.control.ListCell;
 import javafx.scene.control.ListView;
+import javafx.scene.control.TextArea;
 import javafx.scene.control.TextField;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
@@ -23,15 +24,23 @@ public class TaskViewController {
     @FXML
     private TextField dueDateField;
     @FXML
+    private TextField priorityField;
+    @FXML
+    private TextField statusField;
+    @FXML
     private ListView<Task> taskListView;
     @FXML
     private ListView<Task> finishedTaskListView;
     @FXML
     private Label taskTitleLabel;
     @FXML
-    private Label taskDescriptionLabel;
+    private TextArea taskDescriptionLabel;
     @FXML
     private Label taskDueDateLabel;
+    @FXML
+    private Label taskPriorityLabel;
+    @FXML
+    private Label taskStatusLabel;
 
     private ObservableList<Task> taskList = FXCollections.observableArrayList();
     private ObservableList<Task> finishedTaskList = FXCollections.observableArrayList();
@@ -56,8 +65,8 @@ public class TaskViewController {
                             checkBox.setStyle("-fx-text-fill: green; -fx-font-size: 20px;");
                             checkBox.setSelected(item.isCompleted());
                             checkBox.setOnAction(event -> handleTaskCompletion(item));
-                            deleteImageView.setFitHeight(20); // Set the height of the image
-                            deleteImageView.setFitWidth(20); // Set the width of the image
+                            deleteImageView.setFitHeight(20);
+                            deleteImageView.setFitWidth(20);
                             deleteImageView.setOnMouseClicked(event -> handleTaskDeletion(item));
                             HBox hBox = new HBox(checkBox);
                             HBox.setHgrow(hBox, Priority.ALWAYS);
@@ -88,8 +97,8 @@ public class TaskViewController {
                             checkBox.setStyle("-fx-text-fill: grey; -fx-font-size: 20px;");
                             checkBox.setSelected(item.isCompleted());
                             checkBox.setOnAction(event -> handleTaskUncompletion(item));
-                            deleteImageView.setFitHeight(20); // Set the height of the image
-                            deleteImageView.setFitWidth(20); // Set the width of the image
+                            deleteImageView.setFitHeight(20);
+                            deleteImageView.setFitWidth(20);
                             deleteImageView.setOnMouseClicked(event -> handleTaskDeletion(item));
                             HBox hBox = new HBox(checkBox);
                             HBox.setHgrow(hBox, Priority.ALWAYS);
@@ -114,13 +123,17 @@ public class TaskViewController {
         String title = titleField.getText();
         String description = descriptionField.getText();
         String dueDate = dueDateField.getText();
+        String priority = priorityField.getText();
+        String status = statusField.getText();
 
         if (!title.isEmpty()) {
-            Task newTask = new Task(title, description, dueDate, false);
+            Task newTask = new Task(title, description, dueDate, priority, status, false);
             taskList.add(newTask);
             titleField.clear();
             descriptionField.clear();
             dueDateField.clear();
+            priorityField.clear();
+            statusField.clear();
         }
     }
 
@@ -129,8 +142,10 @@ public class TaskViewController {
         Task selectedTask = taskListView.getSelectionModel().getSelectedItem();
         if (selectedTask != null) {
             taskTitleLabel.setText(selectedTask.getTitle());
-            taskDescriptionLabel.setText("Description: " + selectedTask.getDescription());
+            taskDescriptionLabel.setText(selectedTask.getDescription());
             taskDueDateLabel.setText("Due Date: " + selectedTask.getDueDate());
+            taskPriorityLabel.setText("Priority: " + selectedTask.getPriority());
+            taskStatusLabel.setText("Status: " + selectedTask.getStatus());
         }
     }
 
@@ -139,8 +154,10 @@ public class TaskViewController {
         Task selectedTask = finishedTaskListView.getSelectionModel().getSelectedItem();
         if (selectedTask != null) {
             taskTitleLabel.setText(selectedTask.getTitle());
-            taskDescriptionLabel.setText("Description: " + selectedTask.getDescription());
+            taskDescriptionLabel.setText(selectedTask.getDescription());
             taskDueDateLabel.setText("Due Date: " + selectedTask.getDueDate());
+            taskPriorityLabel.setText("Priority: " + selectedTask.getPriority());
+            taskStatusLabel.setText("Status: " + selectedTask.getStatus());
         }
     }
 
@@ -168,18 +185,24 @@ public class TaskViewController {
         taskTitleLabel.setText("");
         taskDescriptionLabel.setText("");
         taskDueDateLabel.setText("");
+        taskPriorityLabel.setText("");
+        taskStatusLabel.setText("");
     }
 
     public static class Task {
         private String title;
         private String description;
         private String dueDate;
+        private String priority;
+        private String status;
         private boolean completed;
 
-        public Task(String title, String description, String dueDate, boolean completed) {
+        public Task(String title, String description, String dueDate, String priority, String status, boolean completed) {
             this.title = title;
             this.description = description;
             this.dueDate = dueDate;
+            this.priority = priority;
+            this.status = status;
             this.completed = completed;
         }
 
@@ -193,6 +216,14 @@ public class TaskViewController {
 
         public String getDueDate() {
             return dueDate;
+        }
+
+        public String getPriority() {
+            return priority;
+        }
+
+        public String getStatus() {
+            return status;
         }
 
         public boolean isCompleted() {
