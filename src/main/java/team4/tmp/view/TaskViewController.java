@@ -36,17 +36,25 @@ public class TaskViewController {
     @FXML
     private TextArea taskDescriptionLabel;
     @FXML
-    private Label taskDueDateLabel;
+    private TextField taskDueDateField; // Editable due date field
     @FXML
-    private Label taskPriorityLabel;
+    private TextField taskPriorityField; // Editable priority field
     @FXML
-    private Label taskStatusLabel;
+    private TextField taskStatusField; // Editable status field
+    @FXML
+    private ImageView logoImageView; // ImageView for logushka.png
 
     private ObservableList<Task> taskList = FXCollections.observableArrayList();
     private ObservableList<Task> finishedTaskList = FXCollections.observableArrayList();
 
+    private Task selectedTask; // Track the currently selected task
+
     @FXML
     private void initialize() {
+        // Load the logushka.png image
+        Image logoImage = new Image(getClass().getResourceAsStream("/images/logushka.png"));
+        logoImageView.setImage(logoImage);
+
         taskListView.setItems(taskList);
         finishedTaskListView.setItems(finishedTaskList);
 
@@ -139,26 +147,51 @@ public class TaskViewController {
 
     @FXML
     private void handleTaskSelection(MouseEvent event) {
-        Task selectedTask = taskListView.getSelectionModel().getSelectedItem();
+        selectedTask = taskListView.getSelectionModel().getSelectedItem();
         if (selectedTask != null) {
-            taskTitleLabel.setText(selectedTask.getTitle());
-            taskDescriptionLabel.setText(selectedTask.getDescription());
-            taskDueDateLabel.setText("Due Date: " + selectedTask.getDueDate());
-            taskPriorityLabel.setText("Priority: " + selectedTask.getPriority());
-            taskStatusLabel.setText("Status: " + selectedTask.getStatus());
+            displayTaskDetails(selectedTask);
         }
     }
 
     @FXML
     private void handleFinishedTaskSelection(MouseEvent event) {
-        Task selectedTask = finishedTaskListView.getSelectionModel().getSelectedItem();
+        selectedTask = finishedTaskListView.getSelectionModel().getSelectedItem();
         if (selectedTask != null) {
-            taskTitleLabel.setText(selectedTask.getTitle());
-            taskDescriptionLabel.setText(selectedTask.getDescription());
-            taskDueDateLabel.setText("Due Date: " + selectedTask.getDueDate());
-            taskPriorityLabel.setText("Priority: " + selectedTask.getPriority());
-            taskStatusLabel.setText("Status: " + selectedTask.getStatus());
+            displayTaskDetails(selectedTask);
         }
+    }
+
+    private void displayTaskDetails(Task task) {
+        taskTitleLabel.setText(task.getTitle());
+        taskDescriptionLabel.setText(task.getDescription());
+        taskDueDateField.setText(task.getDueDate()); // Populate editable field
+        taskPriorityField.setText(task.getPriority()); // Populate editable field
+        taskStatusField.setText(task.getStatus()); // Populate editable field
+    }
+
+    @FXML
+    private void handleSaveChanges() {
+        if (selectedTask != null) {
+            // Update the selected task with new values
+            selectedTask.setDueDate(taskDueDateField.getText());
+            selectedTask.setPriority(taskPriorityField.getText());
+            selectedTask.setStatus(taskStatusField.getText());
+
+            // Refresh the ListView to reflect changes
+            taskListView.refresh();
+            finishedTaskListView.refresh();
+
+            // Clear the editable fields
+            clearTaskDetails();
+        }
+    }
+
+    private void clearTaskDetails() {
+        taskTitleLabel.setText("");
+        taskDescriptionLabel.setText("");
+        taskDueDateField.clear();
+        taskPriorityField.clear();
+        taskStatusField.clear();
     }
 
     private void handleTaskCompletion(Task task) {
@@ -179,14 +212,6 @@ public class TaskViewController {
         taskList.remove(task);
         finishedTaskList.remove(task);
         clearTaskDetails();
-    }
-
-    private void clearTaskDetails() {
-        taskTitleLabel.setText("");
-        taskDescriptionLabel.setText("");
-        taskDueDateLabel.setText("");
-        taskPriorityLabel.setText("");
-        taskStatusLabel.setText("");
     }
 
     public static class Task {
@@ -218,12 +243,24 @@ public class TaskViewController {
             return dueDate;
         }
 
+        public void setDueDate(String dueDate) {
+            this.dueDate = dueDate;
+        }
+
         public String getPriority() {
             return priority;
         }
 
+        public void setPriority(String priority) {
+            this.priority = priority;
+        }
+
         public String getStatus() {
             return status;
+        }
+
+        public void setStatus(String status) {
+            this.status = status;
         }
 
         public boolean isCompleted() {

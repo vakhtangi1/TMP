@@ -11,6 +11,8 @@
 <?import javafx.scene.layout.GridPane?>
 <?import javafx.scene.layout.HBox?>
 <?import javafx.scene.layout.VBox?>
+<?import javafx.scene.image.ImageView?>
+<?import javafx.scene.image.Image?>
 
 <BorderPane xmlns:fx="http://javafx.com/fxml" fx:controller="team4.tmp.view.TaskViewController" style="-fx-background-color: black;">
     <top>
@@ -38,6 +40,9 @@
     </top>
     <center>
         <VBox alignment="CENTER" spacing="20">
+            <!-- Add ImageView for logushka.png -->
+            <ImageView fx:id="logoImageView" fitWidth="150" fitHeight="150" preserveRatio="true" />
+
             <HBox alignment="CENTER" spacing="50">
                 <VBox alignment="CENTER" spacing="10" style="-fx-border-color: white; -fx-border-width: 2px; -fx-padding: 10;">
                     <Label text="Your Tasks:" style="-fx-font-size: 18px; -fx-text-fill: white;" />
@@ -51,9 +56,19 @@
             <VBox alignment="CENTER" spacing="10" style="-fx-border-color: white; -fx-border-width: 2px; -fx-padding: 15;">
                 <Label fx:id="taskTitleLabel" text="" style="-fx-font-size: 20px; -fx-text-fill: white;" />
                 <TextArea fx:id="taskDescriptionLabel" style="-fx-text-fill: white; -fx-control-inner-background: black;" wrapText="true" />
-                <Label fx:id="taskDueDateLabel" text="" style="-fx-text-fill: white;" />
-                <Label fx:id="taskPriorityLabel" text="" style="-fx-text-fill: white;" />
-                <Label fx:id="taskStatusLabel" text="" style="-fx-text-fill: white;" />
+
+                <!-- Editable Fields for Task Details -->
+                <Label text="Due Date:" style="-fx-text-fill: white;" />
+                <TextField fx:id="taskDueDateField" style="-fx-text-fill: white; -fx-control-inner-background: black;" />
+
+                <Label text="Priority:" style="-fx-text-fill: white;" />
+                <TextField fx:id="taskPriorityField" style="-fx-text-fill: white; -fx-control-inner-background: black;" />
+
+                <Label text="Status:" style="-fx-text-fill: white;" />
+                <TextField fx:id="taskStatusField" style="-fx-text-fill: white; -fx-control-inner-background: black;" />
+
+                <!-- Save Changes Button -->
+                <Button text="Save Changes" onAction="#handleSaveChanges" style="-fx-background-color: lightblue; -fx-pref-width: 200px;" />
             </VBox>
         </VBox>
     </center>
