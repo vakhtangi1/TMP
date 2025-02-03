@@ -2,7 +2,6 @@
 
 <?import javafx.geometry.Insets?>
 <?import javafx.scene.control.Button?>
-<?import javafx.scene.control.CheckBox?>
 <?import javafx.scene.control.Label?>
 <?import javafx.scene.control.ListView?>
 <?import javafx.scene.control.TextArea?>
@@ -11,10 +10,12 @@
 <?import javafx.scene.layout.GridPane?>
 <?import javafx.scene.layout.HBox?>
 <?import javafx.scene.layout.VBox?>
+<?import javafx.scene.control.ComboBox?>
+<?import javafx.scene.control.TextInputDialog?>
 <?import javafx.scene.image.ImageView?>
 <?import javafx.scene.image.Image?>
 
-<BorderPane xmlns:fx="http://javafx.com/fxml" fx:controller="team4.tmp.view.TaskViewController" style="-fx-background-color: black;">
+<BorderPane xmlns:fx="http://javafx.com/fxml" fx:controller="team4.tmp.view.TaskViewController" stylesheets="@../style.css">
     <top>
         <VBox alignment="CENTER" spacing="15">
             <Label text="Task Management" style="-fx-font-size: 24px; -fx-text-fill: white;" />
@@ -39,37 +40,50 @@
         </VBox>
     </top>
     <center>
-        <VBox alignment="CENTER" spacing="20">
-            <!-- Add ImageView for logushka.png -->
-            <ImageView fx:id="logoImageView" fitWidth="150" fitHeight="150" preserveRatio="true" />
+        <HBox alignment="CENTER" spacing="20">
+            <!-- Side Pane -->
+            <VBox alignment="CENTER" spacing="10" style="-fx-border-color: white; -fx-border-width: 2px; -fx-padding: 10; -fx-pref-width: 200px;">
+                <!-- User Image at the top of the filter section -->
+                <ImageView fx:id="userImageView" fitHeight="60" fitWidth="60" style="-fx-alignment: center;">
+                    <image>
+                        <Image url="@/images/user.png"/>
+                    </image>
+                </ImageView>
+                <Label text="Filters &amp; Search" style="-fx-font-size: 18px; -fx-text-fill: white;" />
+                <Button text="Tasks by Priority" onAction="#filterTasksByPriority" style="-fx-pref-width: 150px;" />
+                <Button text="Tasks by Date" onAction="#filterTasksByDate" style="-fx-pref-width: 150px;" />
+                <Button text="Search by Name" onAction="#searchTasksByName" style="-fx-pref-width: 150px;" />
+            </VBox>
 
-            <HBox alignment="CENTER" spacing="50">
-                <VBox alignment="CENTER" spacing="10" style="-fx-border-color: white; -fx-border-width: 2px; -fx-padding: 10;">
-                    <Label text="Your Tasks:" style="-fx-font-size: 18px; -fx-text-fill: white;" />
-                    <ListView fx:id="taskListView" style="-fx-background-color: black; -fx-font-size: 16px;" />
-                </VBox>
-                <VBox alignment="CENTER" spacing="10" style="-fx-border-color: white; -fx-border-width: 2px; -fx-padding: 10;">
-                    <Label text="Finished Tasks:" style="-fx-font-size: 18px; -fx-text-fill: white;" />
-                    <ListView fx:id="finishedTaskListView" style="-fx-background-color: black; -fx-font-size: 16px;" />
-                </VBox>
-            </HBox>
-            <VBox alignment="CENTER" spacing="10" style="-fx-border-color: white; -fx-border-width: 2px; -fx-padding: 15;">
-                <Label fx:id="taskTitleLabel" text="" style="-fx-font-size: 20px; -fx-text-fill: white;" />
-                <TextArea fx:id="taskDescriptionLabel" style="-fx-text-fill: white; -fx-control-inner-background: black;" wrapText="true" />
+            <!-- Main Task Panes -->
+            <VBox alignment="CENTER" spacing="10" style="-fx-border-color: white; -fx-border-width: 2px; -fx-padding: 10; -fx-pref-width: 300px;">
+                <Label text="Your Tasks:" style="-fx-font-size: 18px; -fx-text-fill: white;" />
+                <ListView fx:id="taskListView" style="-fx-font-size: 14px;" />
+            </VBox>
+            <VBox alignment="CENTER" spacing="10" style="-fx-border-color: white; -fx-border-width: 2px; -fx-padding: 10; -fx-pref-width: 300px;">
+                <Label text="Finished Tasks:" style="-fx-font-size: 18px; -fx-text-fill: white;" />
+                <ListView fx:id="finishedTaskListView" style="-fx-font-size: 14px;" />
+            </VBox>
+            <VBox alignment="CENTER" spacing="10" style="-fx-border-color: white; -fx-border-width: 2px; -fx-padding: 10; -fx-pref-width: 300px;" layoutY="-3">
+                <!-- Task Title (Replaces "Task Details" Label) -->
+                <Label fx:id="taskTitleLabel" text="" style="-fx-font-size: 18px; -fx-text-fill: white;" />
+
+                <!-- Task Description -->
+                <TextArea fx:id="taskDescriptionLabel" style="-fx-text-fill: black; -fx-control-inner-background: transparent;" wrapText="true" prefHeight="160" />
 
                 <!-- Editable Fields for Task Details -->
-                <Label text="Due Date:" style="-fx-text-fill: white;" />
-                <TextField fx:id="taskDueDateField" style="-fx-text-fill: white; -fx-control-inner-background: black;" />
+                <Label text="Due Date:" style="-fx-font-size: 14px; -fx-text-fill: white;" />
+                <TextField fx:id="taskDueDateField" style="-fx-text-fill: black; -fx-control-inner-background: transparent;" />
 
-                <Label text="Priority:" style="-fx-text-fill: white;" />
-                <TextField fx:id="taskPriorityField" style="-fx-text-fill: white; -fx-control-inner-background: black;" />
+                <Label text="Priority:" style="-fx-font-size: 14px; -fx-text-fill: white;" />
+                <TextField fx:id="taskPriorityField" style="-fx-text-fill: black; -fx-control-inner-background: transparent;" />
 
-                <Label text="Status:" style="-fx-text-fill: white;" />
-                <TextField fx:id="taskStatusField" style="-fx-text-fill: white; -fx-control-inner-background: black;" />
+                <Label text="Status:" style="-fx-font-size: 14px; -fx-text-fill: white;" />
+                <TextField fx:id="taskStatusField" style="-fx-text-fill: black; -fx-control-inner-background: transparent;" />
 
                 <!-- Save Changes Button -->
                 <Button text="Save Changes" onAction="#handleSaveChanges" style="-fx-background-color: lightblue; -fx-pref-width: 200px;" />
             </VBox>
-        </VBox>
+        </HBox>
     </center>
 </BorderPane>

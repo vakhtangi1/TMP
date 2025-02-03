@@ -7,6 +7,7 @@ import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.control.PasswordField;
 import javafx.scene.control.TextField;
+import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
 
@@ -79,7 +80,7 @@ public class MainViewController {
     private void navigateToTaskView() {
         try {
             FXMLLoader loader = new FXMLLoader(getClass().getResource("/fxml/TaskView.fxml"));
-            VBox taskView = loader.load();
+            BorderPane taskView = loader.load(); // Change VBox to BorderPane
             Stage stage = (Stage) usernameField.getScene().getWindow();
             stage.setScene(new Scene(taskView));
         } catch (Exception e) {

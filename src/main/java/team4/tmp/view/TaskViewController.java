@@ -1,20 +1,15 @@
 package team4.tmp.view;
 
 import javafx.fxml.FXML;
-import javafx.scene.control.CheckBox;
-import javafx.scene.control.Label;
-import javafx.scene.control.ListCell;
-import javafx.scene.control.ListView;
-import javafx.scene.control.TextArea;
-import javafx.scene.control.TextField;
+import javafx.scene.control.*;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
-import javafx.scene.image.Image;
-import javafx.scene.image.ImageView;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.Priority;
 import javafx.util.Callback;
+import javafx.scene.image.Image;
+import javafx.scene.image.ImageView;
 
 public class TaskViewController {
     @FXML
@@ -36,28 +31,27 @@ public class TaskViewController {
     @FXML
     private TextArea taskDescriptionLabel;
     @FXML
-    private TextField taskDueDateField; // Editable due date field
+    private TextField taskDueDateField;
     @FXML
-    private TextField taskPriorityField; // Editable priority field
+    private TextField taskPriorityField;
     @FXML
-    private TextField taskStatusField; // Editable status field
+    private TextField taskStatusField;
     @FXML
-    private ImageView logoImageView; // ImageView for logushka.png
+    private ImageView userImageView; // User image view (added)
+    @FXML
+    private Label usernameLabel;  // Label to show the username (added)
 
     private ObservableList<Task> taskList = FXCollections.observableArrayList();
     private ObservableList<Task> finishedTaskList = FXCollections.observableArrayList();
 
-    private Task selectedTask; // Track the currently selected task
+    private Task selectedTask;
 
     @FXML
     private void initialize() {
-        // Load the logushka.png image
-        Image logoImage = new Image(getClass().getResourceAsStream("/images/logushka.png"));
-        logoImageView.setImage(logoImage);
-
         taskListView.setItems(taskList);
         finishedTaskListView.setItems(finishedTaskList);
 
+        // Custom cell factory for the task list
         taskListView.setCellFactory(new Callback<ListView<Task>, ListCell<Task>>() {
             @Override
             public ListCell<Task> call(ListView<Task> param) {
@@ -70,11 +64,11 @@ public class TaskViewController {
                         super.updateItem(item, empty);
                         if (item != null) {
                             checkBox.setText((getIndex() + 1) + ". " + item.getTitle());
-                            checkBox.setStyle("-fx-text-fill: green; -fx-font-size: 20px;");
+                            checkBox.setStyle("-fx-text-fill: green; -fx-font-size: 14px;");
                             checkBox.setSelected(item.isCompleted());
                             checkBox.setOnAction(event -> handleTaskCompletion(item));
-                            deleteImageView.setFitHeight(20);
-                            deleteImageView.setFitWidth(20);
+                            deleteImageView.setFitHeight(16);
+                            deleteImageView.setFitWidth(16);
                             deleteImageView.setOnMouseClicked(event -> handleTaskDeletion(item));
                             HBox hBox = new HBox(checkBox);
                             HBox.setHgrow(hBox, Priority.ALWAYS);
@@ -90,6 +84,7 @@ public class TaskViewController {
             }
         });
 
+        // Custom cell factory for the finished task list
         finishedTaskListView.setCellFactory(new Callback<ListView<Task>, ListCell<Task>>() {
             @Override
             public ListCell<Task> call(ListView<Task> param) {
@@ -102,11 +97,11 @@ public class TaskViewController {
                         super.updateItem(item, empty);
                         if (item != null) {
                             checkBox.setText((getIndex() + 1) + ". " + item.getTitle());
-                            checkBox.setStyle("-fx-text-fill: grey; -fx-font-size: 20px;");
+                            checkBox.setStyle("-fx-text-fill: grey; -fx-font-size: 14px;");
                             checkBox.setSelected(item.isCompleted());
                             checkBox.setOnAction(event -> handleTaskUncompletion(item));
-                            deleteImageView.setFitHeight(20);
-                            deleteImageView.setFitWidth(20);
+                            deleteImageView.setFitHeight(16);
+                            deleteImageView.setFitWidth(16);
                             deleteImageView.setOnMouseClicked(event -> handleTaskDeletion(item));
                             HBox hBox = new HBox(checkBox);
                             HBox.setHgrow(hBox, Priority.ALWAYS);
@@ -122,8 +117,17 @@ public class TaskViewController {
             }
         });
 
+        // Event handlers for task selection
         taskListView.setOnMouseClicked(this::handleTaskSelection);
         finishedTaskListView.setOnMouseClicked(this::handleFinishedTaskSelection);
+
+        // Event handler for user image click
+        userImageView.setOnMouseClicked(this::handleUserImageClick);
+    }
+
+    // Method to set the username dynamically after login or registration
+    public void setUsername(String username) {
+        usernameLabel.setText(username); // Set username text in label
     }
 
     @FXML
@@ -137,12 +141,16 @@ public class TaskViewController {
         if (!title.isEmpty()) {
             Task newTask = new Task(title, description, dueDate, priority, status, false);
             taskList.add(newTask);
-            titleField.clear();
-            descriptionField.clear();
-            dueDateField.clear();
-            priorityField.clear();
-            statusField.clear();
+            clearInputFields();
         }
+    }
+
+    private void clearInputFields() {
+        titleField.clear();
+        descriptionField.clear();
+        dueDateField.clear();
+        priorityField.clear();
+        statusField.clear();
     }
 
     @FXML
@@ -164,24 +172,22 @@ public class TaskViewController {
     private void displayTaskDetails(Task task) {
         taskTitleLabel.setText(task.getTitle());
         taskDescriptionLabel.setText(task.getDescription());
-        taskDueDateField.setText(task.getDueDate()); // Populate editable field
-        taskPriorityField.setText(task.getPriority()); // Populate editable field
-        taskStatusField.setText(task.getStatus()); // Populate editable field
+        taskDueDateField.setText(task.getDueDate());
+        taskPriorityField.setText(task.getPriority());
+        taskStatusField.setText(task.getStatus());
     }
 
     @FXML
     private void handleSaveChanges() {
         if (selectedTask != null) {
-            // Update the selected task with new values
             selectedTask.setDueDate(taskDueDateField.getText());
             selectedTask.setPriority(taskPriorityField.getText());
             selectedTask.setStatus(taskStatusField.getText());
 
-            // Refresh the ListView to reflect changes
+            // Refresh the ListViews to reflect changes
             taskListView.refresh();
             finishedTaskListView.refresh();
 
-            // Clear the editable fields
             clearTaskDetails();
         }
     }
@@ -195,25 +201,97 @@ public class TaskViewController {
     }
 
     private void handleTaskCompletion(Task task) {
-        task.setCompleted(true);
-        taskList.remove(task);
-        finishedTaskList.add(task);
-        clearTaskDetails();
+        if (taskList.contains(task)) { // Check if the task exists in the list
+            task.setCompleted(true);
+            taskList.remove(task); // Remove the task from the active task list
+            finishedTaskList.add(task); // Add the task to the finished task list
+
+            // Refresh the ListViews to reflect changes
+            taskListView.refresh();
+            finishedTaskListView.refresh();
+
+            clearTaskDetails(); // Clear the task details pane
+        }
     }
 
     private void handleTaskUncompletion(Task task) {
-        task.setCompleted(false);
-        finishedTaskList.remove(task);
-        taskList.add(task);
-        clearTaskDetails();
+        if (finishedTaskList.contains(task)) { // Check if the task exists in the list
+            task.setCompleted(false);
+            finishedTaskList.remove(task); // Remove the task from the finished task list
+            taskList.add(task); // Add the task back to the active task list
+
+            // Refresh the ListViews to reflect changes
+            taskListView.refresh();
+            finishedTaskListView.refresh();
+
+            clearTaskDetails(); // Clear the task details pane
+        }
     }
 
     private void handleTaskDeletion(Task task) {
-        taskList.remove(task);
-        finishedTaskList.remove(task);
-        clearTaskDetails();
+        if (taskList.contains(task)) { // Check if the task exists in the active task list
+            taskList.remove(task);
+        } else if (finishedTaskList.contains(task)) { // Check if the task exists in the finished task list
+            finishedTaskList.remove(task);
+        }
+
+        // Refresh the ListViews to reflect changes
+        taskListView.refresh();
+        finishedTaskListView.refresh();
+
+        clearTaskDetails(); // Clear the task details pane
     }
 
+    @FXML
+    private void filterTasksByPriority() {
+        TextInputDialog dialog = new TextInputDialog();
+        dialog.setTitle("Filter by Priority");
+        dialog.setHeaderText("Enter Priority (1-5):");
+        dialog.setContentText("Priority:");
+
+        dialog.showAndWait().ifPresent(priority -> {
+            ObservableList<Task> filteredTasks = taskList.filtered(task -> task.getPriority().equals(priority));
+            taskListView.setItems(filteredTasks);
+        });
+    }
+
+    @FXML
+    private void filterTasksByDate() {
+        TextInputDialog dialog = new TextInputDialog();
+        dialog.setTitle("Filter by Date");
+        dialog.setHeaderText("Enter Date (YYYY-MM-DD):");
+        dialog.setContentText("Date:");
+
+        dialog.showAndWait().ifPresent(date -> {
+            ObservableList<Task> filteredTasks = taskList.filtered(task -> task.getDueDate().equals(date));
+            taskListView.setItems(filteredTasks);
+        });
+    }
+
+    @FXML
+    private void searchTasksByName() {
+        TextInputDialog dialog = new TextInputDialog();
+        dialog.setTitle("Search by Name");
+        dialog.setHeaderText("Enter Task Name:");
+        dialog.setContentText("Name:");
+
+        dialog.showAndWait().ifPresent(name -> {
+            ObservableList<Task> filteredTasks = taskList.filtered(task -> task.getTitle().toLowerCase().contains(name.toLowerCase()));
+            taskListView.setItems(filteredTasks);
+        });
+    }
+
+    // Event handler for user image click
+    private void handleUserImageClick(MouseEvent event) {
+        // Display user email and app version in a dialog
+        Alert alert = new Alert(Alert.AlertType.INFORMATION);
+        alert.setTitle("User Information");
+        alert.setHeaderText("User Email: user@example.com");
+        alert.setContentText("Application Version: 9.50.00");
+        alert.showAndWait();
+    }
+
+    // Inner class representing a Task
     public static class Task {
         private String title;
         private String description;
@@ -235,8 +313,16 @@ public class TaskViewController {
             return title;
         }
 
+        public void setTitle(String title) {
+            this.title = title;
+        }
+
         public String getDescription() {
             return description;
+        }
+
+        public void setDescription(String description) {
+            this.description = description;
         }
 
         public String getDueDate() {

@@ -12,6 +12,8 @@ public class User {
 
     private String username;
 
+    private String password;  // Add password field
+
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     private Set<Task> tasks; // Ensure this is a Set or List
 
@@ -32,10 +34,19 @@ public class User {
         this.username = username;
     }
 
+    public String getPassword() {  // Getter for password
+        return password;
+    }
+
+    public void setPassword(String password) {  // Setter for password
+        this.password = password;
+    }
+
     public Set<Task> getTasks() {
         return tasks;
     }
 
     public void setTasks(Set<Task> tasks) {
         this.tasks = tasks;
-    }}
+    }
+}
