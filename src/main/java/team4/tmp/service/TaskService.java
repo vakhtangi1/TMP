@@ -53,14 +53,24 @@ public class TaskService {
         return null;
     }
 
-    // Custom method to find tasks by status
+    // Find tasks by status
     public List<Task> findTasksByStatus(String status) {
         return taskRepository.findByStatus(status);
     }
 
-    // Custom method to find tasks by priority and due date
-    public List<Task> findTasksByPriorityAndDueDateBefore(String priority, String dueDate) {
-        return taskRepository.findTasksByPriorityAndDueDateBefore(priority, dueDate);
+    // Find tasks by priority
+    public List<Task> findTasksByPriority(String priority) {
+        return taskRepository.findTasksByPriority(priority);
+    }
+
+    // Find tasks by due date
+    public List<Task> findTasksByDueDate(String dueDate) {
+        return taskRepository.findTasksByDueDate(dueDate);
+    }
+
+    // Mark task as completed
+    public boolean markTaskAsCompleted(Long taskId) {
+        return updateTaskStatus(taskId, "Completed");
     }
 
     // Custom method to update task status
