@@ -1,10 +1,13 @@
 package team4.tmp.controller;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import team4.tmp.model.Task;
 import team4.tmp.service.TaskService;
 
+import java.time.LocalDate;
 import java.util.List;
 
 @RestController
@@ -32,26 +35,42 @@ public class TaskController {
 
     // Create a task
     @PostMapping
-    public Task createTask(@RequestBody Task task) {
-        return taskService.createTask(task);
+    public ResponseEntity<Task> createTask(@RequestBody Task task) {
+        Task createdTask = taskService.createTask(task);
+        return ResponseEntity.status(HttpStatus.CREATED).body(createdTask);
     }
 
     // Update a task
     @PutMapping("/{taskId}")
-    public Task updateTask(@PathVariable Long taskId, @RequestBody Task updatedTask) {
-        return taskService.updateTask(taskId, updatedTask);
+    public ResponseEntity<Task> updateTask(@PathVariable Long taskId, @RequestBody Task updatedTask) {
+        Task task = taskService.updateTask(taskId, updatedTask);
+        if (task != null) {
+            return ResponseEntity.ok(task);
+        } else {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(null);
+        }
     }
 
     // Delete a task
     @DeleteMapping("/{taskId}")
-    public boolean deleteTask(@PathVariable Long taskId) {
-        return taskService.deleteTask(taskId);
+    public ResponseEntity<String> deleteTask(@PathVariable Long taskId) {
+        boolean isDeleted = taskService.deleteTask(taskId);
+        if (isDeleted) {
+            return ResponseEntity.ok("Task deleted successfully.");
+        } else {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Task not found.");
+        }
     }
 
     // Update task status
     @PatchMapping("/{taskId}/status/{status}")
-    public boolean updateTaskStatus(@PathVariable Long taskId, @PathVariable String status) {
-        return taskService.updateTaskStatus(taskId, status);
+    public ResponseEntity<String> updateTaskStatus(@PathVariable Long taskId, @PathVariable String status) {
+        boolean isUpdated = taskService.updateTaskStatus(taskId, status);
+        if (isUpdated) {
+            return ResponseEntity.ok("Task status updated successfully.");
+        } else {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Task not found.");
+        }
     }
 
     // Get tasks by priority
@@ -63,12 +82,18 @@ public class TaskController {
     // Get tasks by due date
     @GetMapping("/dueDate/{dueDate}")
     public List<Task> getTasksByDueDate(@PathVariable String dueDate) {
-        return taskService.findTasksByDueDate(dueDate);
+        LocalDate localDate = LocalDate.parse(dueDate);
+        return taskService.findTasksByDueDate(localDate);
     }
 
     // Mark task as completed
     @PatchMapping("/{taskId}/complete")
-    public boolean markTaskAsCompleted(@PathVariable Long taskId) {
-        return taskService.updateTaskStatus(taskId, "Completed");
+    public ResponseEntity<String> markTaskAsCompleted(@PathVariable Long taskId) {
+        boolean isUpdated = taskService.updateTaskStatus(taskId, "Completed");
+        if (isUpdated) {
+            return ResponseEntity.ok("Task marked as completed.");
+        } else {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Task not found.");
+        }
     }
 }
