@@ -8,7 +8,7 @@ import team4.tmp.service.TaskService;
 import java.util.List;
 
 @RestController
-@RequestMapping("/tasks")
+@RequestMapping("/api/tasks")
 public class TaskController {
 
     private final TaskService taskService;
@@ -52,5 +52,23 @@ public class TaskController {
     @PatchMapping("/{taskId}/status/{status}")
     public boolean updateTaskStatus(@PathVariable Long taskId, @PathVariable String status) {
         return taskService.updateTaskStatus(taskId, status);
+    }
+
+    // Get tasks by priority
+    @GetMapping("/priority/{priority}")
+    public List<Task> getTasksByPriority(@PathVariable String priority) {
+        return taskService.findTasksByPriority(priority);
+    }
+
+    // Get tasks by due date
+    @GetMapping("/dueDate/{dueDate}")
+    public List<Task> getTasksByDueDate(@PathVariable String dueDate) {
+        return taskService.findTasksByDueDate(dueDate);
+    }
+
+    // Mark task as completed
+    @PatchMapping("/{taskId}/complete")
+    public boolean markTaskAsCompleted(@PathVariable Long taskId) {
+        return taskService.updateTaskStatus(taskId, "Completed");
     }
 }
