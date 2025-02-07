@@ -2,9 +2,11 @@ package team4.tmp.service;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import team4.tmp.model.Task;
 import team4.tmp.repository.TaskRepository;
 
+import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;
 
@@ -64,7 +66,7 @@ public class TaskService {
     }
 
     // Find tasks by due date
-    public List<Task> findTasksByDueDate(String dueDate) {
+    public List<Task> findTasksByDueDate(LocalDate dueDate) {
         return taskRepository.findTasksByDueDate(dueDate);
     }
 
@@ -74,6 +76,7 @@ public class TaskService {
     }
 
     // Custom method to update task status
+    @Transactional
     public boolean updateTaskStatus(Long taskId, String status) {
         int updatedRows = taskRepository.updateTaskStatus(status, taskId);
         return updatedRows > 0;
