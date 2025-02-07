@@ -11,9 +11,13 @@ public interface TaskRepository extends JpaRepository<Task, Long> {
     // Find tasks by status
     List<Task> findByStatus(String status);
 
-    // Custom query to find tasks by priority and due date
-    @Query("SELECT t FROM Task t WHERE t.priority = ?1 AND t.dueDate < ?2")
-    List<Task> findTasksByPriorityAndDueDateBefore(String priority, String dueDate);
+    // Find tasks by priority
+    @Query("SELECT t FROM Task t WHERE t.priority = ?1")
+    List<Task> findTasksByPriority(String priority);
+
+    // Find tasks by due date
+    @Query("SELECT t FROM Task t WHERE t.dueDate = ?1")
+    List<Task> findTasksByDueDate(String dueDate);
 
     // Custom query to update a task's status by taskId
     @Query("UPDATE Task t SET t.status = ?1 WHERE t.id = ?2")
