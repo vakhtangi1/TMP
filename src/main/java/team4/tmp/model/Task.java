@@ -5,7 +5,9 @@ import java.time.LocalDate;
 
 @Entity
 public class Task {
-
+    @ManyToOne
+    @JoinColumn(name = "user_id", referencedColumnName = "id")  // Ensuring that user_id references the user table
+    private User user;
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
@@ -19,9 +21,7 @@ public class Task {
     private String priority;
     private String status;
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "user_id") // This will create a foreign key column in Task table
-    private User user; // Add this field to establish relationship
+
 
     // Getters and setters
     public Long getId() {
