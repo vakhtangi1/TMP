@@ -15,7 +15,6 @@ import java.net.http.HttpClient;
 import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import javafx.scene.layout.Region;
 import team4.tmp.model.Task;
 
 public class TaskViewController {
@@ -94,6 +93,7 @@ public class TaskViewController {
                             finishedTaskList.remove(task);
                             taskList.add(task);
                         }
+                        updateTaskInDatabase(task); // Update task status in the database
                     }
                 });
 
@@ -155,6 +155,7 @@ public class TaskViewController {
                             taskList.remove(task);
                             finishedTaskList.add(task);
                         }
+                        updateTaskInDatabase(task); // Update task status in the database
                     }
                 });
 
@@ -273,11 +274,37 @@ public class TaskViewController {
             selectedTask.setPriority(taskPriorityField.getText());
             selectedTask.setStatus(taskStatusField.getText());
 
+            updateTaskInDatabase(selectedTask); // Update task in the database
+
             // Refresh the ListViews
             taskListView.refresh();
             finishedTaskListView.refresh();
 
             clearTaskDetails();
+        }
+    }
+
+    private void updateTaskInDatabase(Task task) {
+        try {
+            String requestBody = String.format(
+                    "{\"id\": %d, \"title\": \"%s\", \"description\": \"%s\", \"dueDate\": \"%s\", \"priority\": \"%s\", \"status\": \"%s\", \"completed\": %b}",
+                    task.getId(), task.getTitle(), task.getDescription(), task.getDueDate(), task.getPriority(), task.getStatus(), task.isCompleted()
+            );
+
+            HttpRequest request = HttpRequest.newBuilder()
+                    .uri(URI.create(BASE_URL + "/task/" + task.getId()))
+                    .header("Content-Type", "application/json")
+                    .PUT(HttpRequest.BodyPublishers.ofString(requestBody))
+                    .build();
+
+            HttpResponse<String> response = httpClient.send(request, HttpResponse.BodyHandlers.ofString());
+
+            if (response.statusCode() != 200) {
+                showError("Failed to update task.");
+            }
+        } catch (Exception e) {
+            showError("An error occurred while updating the task.");
+            e.printStackTrace();
         }
     }
 
@@ -315,7 +342,7 @@ public class TaskViewController {
         dialog.setContentText("Name:");
 
         dialog.showAndWait().ifPresent(name -> {
-            ObservableList<Task> filteredTasks = taskList.filtered(task -> task.getTitle().toLowerCase() .contains(name.toLowerCase()));
+            ObservableList<Task> filteredTasks = taskList.filtered(task -> task.getTitle().toLowerCase().contains(name.toLowerCase()));
             taskListView.setItems(filteredTasks);
         });
     }

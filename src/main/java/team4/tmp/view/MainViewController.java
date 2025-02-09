@@ -114,7 +114,9 @@ public class MainViewController {
         }
 
         try {
-            String requestBody = String.format("{\"username\": \"%s\", \"password\": \"%s\"}", username, password);
+            // Hash the password before sending it to the backend
+            String hashedPassword = passwordEncoder.encode(password);
+            String requestBody = String.format("{\"username\": \"%s\", \"password\": \"%s\", \"email\": \"%s\"}", username, hashedPassword, username + "@example.com");
 
             HttpRequest request = HttpRequest.newBuilder()
                     .uri(URI.create(BASE_URL + "/user"))

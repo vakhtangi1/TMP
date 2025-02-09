@@ -94,6 +94,8 @@ public class TaskController {
             return ResponseEntity.ok("Task marked as completed.");
         } else {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Task not found.");
+
         }
+
     }
 }

@@ -9,7 +9,7 @@ import java.time.LocalDate;
 import java.util.List;
 
 public interface TaskRepository extends JpaRepository<Task, Long> {
-
+    List<Task> findByUserId(Long userId);
     // Find tasks by status
     List<Task> findByStatus(String status);
 

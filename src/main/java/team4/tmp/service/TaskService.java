@@ -14,6 +14,10 @@ import java.util.Optional;
 public class TaskService {
 
     private final TaskRepository taskRepository;
+    public List<Task> getTasksByUserId(Long userId) {
+        return taskRepository.findByUserId(userId);
+    }
+
 
     @Autowired
     public TaskService(TaskRepository taskRepository) {
