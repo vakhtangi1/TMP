@@ -1,34 +1,58 @@
 package team4.tmp.model;
-
+import com.fasterxml.jackson.annotation.JsonProperty;
 import jakarta.persistence.*;
 import java.time.LocalDate;
 
 @Entity
+@Table(name = "task")
 public class Task {
-    @ManyToOne
-    @JoinColumn(name = "user_id", referencedColumnName = "id")  // Ensuring that user_id references the user table
-    private User user;
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
+    @GeneratedValue(strategy = GenerationType.IDENTITY) // Auto-generate the ID
+    private int id;
 
+    @Column(nullable = false)
     private String title;
+
+    @Column(nullable = false)
     private String description;
 
-    @Column(name = "due_date")
-    private LocalDate dueDate; // Ensure this is LocalDate type
+    @Column(nullable = false)
+    private String dueDate;
 
+    @Column(nullable = false)
     private String priority;
+
+    @Column(nullable = false)
     private String status;
 
+    @Column(nullable = false)
+    private boolean completed;
 
+    @ManyToOne // Many tasks can belong to one user
+    @JoinColumn(name = "user_id", nullable = false) // Foreign key column
+    private User user;
+
+    // Default constructor (required for JPA)
+    public Task() {}
+
+    // Constructor with parameters (for manual creation)
+    public Task(int id, String title, String description, String dueDate, String priority, String status, boolean completed, User user) {
+        this.id = id;
+        this.title = title;
+        this.description = description;
+        this.dueDate = dueDate;
+        this.priority = priority;
+        this.status = status;
+        this.completed = completed;
+        this.user = user;
+    }
 
     // Getters and setters
-    public Long getId() {
+    public int getId() {
         return id;
     }
 
-    public void setId(Long id) {
+    public void setId(int id) {
         this.id = id;
     }
 
@@ -48,11 +72,11 @@ public class Task {
         this.description = description;
     }
 
-    public LocalDate getDueDate() {
+    public String getDueDate() {
         return dueDate;
     }
 
-    public void setDueDate(LocalDate dueDate) {
+    public void setDueDate(String dueDate) {
         this.dueDate = dueDate;
     }
 
@@ -70,6 +94,14 @@ public class Task {
 
     public void setStatus(String status) {
         this.status = status;
+    }
+
+    public boolean isCompleted() {
+        return completed;
+    }
+
+    public void setCompleted(boolean completed) {
+        this.completed = completed;
     }
 
     public User getUser() {

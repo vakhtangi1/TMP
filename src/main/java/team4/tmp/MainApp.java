@@ -1,4 +1,4 @@
-package team4.tmp;
+ackage team4.tmp;
 
 import javafx.application.Application;
 import javafx.fxml.FXMLLoader;

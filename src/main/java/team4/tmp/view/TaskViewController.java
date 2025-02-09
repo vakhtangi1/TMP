@@ -6,10 +6,17 @@ import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.HBox;
+import javafx.scene.layout.Pane;
 import javafx.scene.layout.Priority;
-import javafx.util.Callback;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
+import java.net.URI;
+import java.net.http.HttpClient;
+import java.net.http.HttpRequest;
+import java.net.http.HttpResponse;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import javafx.scene.layout.Region;
+import team4.tmp.model.Task;
 
 public class TaskViewController {
     @FXML
@@ -37,133 +44,215 @@ public class TaskViewController {
     @FXML
     private TextField taskStatusField;
     @FXML
-    private ImageView userImageView; // User image view (added)
-    @FXML
-    private Label usernameLabel;  // Label to show the username (added)
+    private ImageView userImageView;
 
     private ObservableList<Task> taskList = FXCollections.observableArrayList();
     private ObservableList<Task> finishedTaskList = FXCollections.observableArrayList();
 
     private Task selectedTask;
+    private String authenticatedUserId;
+
+    private static final String BASE_URL = "http://localhost:8080/api";
+    private static final HttpClient httpClient = HttpClient.newHttpClient();
+    private static final ObjectMapper objectMapper = new ObjectMapper();
 
     @FXML
-    private void initialize() {
-        taskListView.setItems(taskList);
-        finishedTaskListView.setItems(finishedTaskList);
+    public void initialize() {
+        // Set up the taskListView to display task titles
+        taskListView.setCellFactory(param -> new ListCell<Task>() {
+            private final CheckBox checkBox = new CheckBox();
+            private final Button deleteButton = new Button();
+            private final HBox hbox = new HBox(10);
+            private final Label taskNumberLabel = new Label();
+            private final Label taskTitleLabel = new Label();
+            private final Pane spacer = new Pane();
 
-        // Custom cell factory for the task list
-        taskListView.setCellFactory(new Callback<ListView<Task>, ListCell<Task>>() {
-            @Override
-            public ListCell<Task> call(ListView<Task> param) {
-                return new ListCell<Task>() {
-                    private CheckBox checkBox = new CheckBox();
-                    private ImageView deleteImageView = new ImageView(new Image(getClass().getResourceAsStream("/images/delete.png")));
+            {
+                // Set up the delete button
+                Image deleteImage = new Image(getClass().getResourceAsStream("/images/delete.png"));
+                ImageView deleteImageView = new ImageView(deleteImage);
+                deleteImageView.setFitHeight(10);
+                deleteImageView.setFitWidth(10);
+                deleteButton.setGraphic(deleteImageView);
+                deleteButton.setOnAction(event -> {
+                    Task task = getItem();
+                    if (task != null) {
+                        deleteTaskFromDatabase(task);
+                        taskList.remove(task);
+                    }
+                });
 
-                    @Override
-                    protected void updateItem(Task item, boolean empty) {
-                        super.updateItem(item, empty);
-                        if (item != null) {
-                            checkBox.setText((getIndex() + 1) + ". " + item.getTitle());
-                            checkBox.setStyle("-fx-text-fill: green; -fx-font-size: 14px;");
-                            checkBox.setSelected(item.isCompleted());
-                            checkBox.setOnAction(event -> handleTaskCompletion(item));
-                            deleteImageView.setFitHeight(16);
-                            deleteImageView.setFitWidth(16);
-                            deleteImageView.setOnMouseClicked(event -> handleTaskDeletion(item));
-                            HBox hBox = new HBox(checkBox);
-                            HBox.setHgrow(hBox, Priority.ALWAYS);
-                            hBox.setSpacing(10);
-                            HBox container = new HBox(hBox, deleteImageView);
-                            container.setSpacing(10);
-                            setGraphic(container);
+                // Set up the checkbox
+                checkBox.setOnAction(event -> {
+                    Task task = getItem();
+                    if (task != null) {
+                        task.setCompleted(checkBox.isSelected());
+                        if (task.isCompleted()) {
+                            taskList.remove(task);
+                            finishedTaskList.add(task);
                         } else {
-                            setGraphic(null);
+                            finishedTaskList.remove(task);
+                            taskList.add(task);
                         }
                     }
-                };
+                });
+
+                // Set the spacer to grow and push the delete button to the right
+                HBox.setHgrow(spacer, Priority.ALWAYS);
+
+                // Add elements to the HBox (delete button on the far right)
+                hbox.getChildren().addAll(taskNumberLabel, checkBox, taskTitleLabel, spacer, deleteButton);
+            }
+
+            @Override
+            protected void updateItem(Task task, boolean empty) {
+                super.updateItem(task, empty);
+                if (empty || task == null) {
+                    setText(null);
+                    setGraphic(null);
+                } else {
+                    taskNumberLabel.setText((taskListView.getItems().indexOf(task) + 1) + ". ");
+                    taskTitleLabel.setText(task.getTitle());
+                    checkBox.setSelected(task.isCompleted());
+                    setGraphic(hbox);
+                }
             }
         });
 
-        // Custom cell factory for the finished task list
-        finishedTaskListView.setCellFactory(new Callback<ListView<Task>, ListCell<Task>>() {
-            @Override
-            public ListCell<Task> call(ListView<Task> param) {
-                return new ListCell<Task>() {
-                    private CheckBox checkBox = new CheckBox();
-                    private ImageView deleteImageView = new ImageView(new Image(getClass().getResourceAsStream("/images/delete.png")));
+        // Set up the finishedTaskListView
+        finishedTaskListView.setCellFactory(param -> new ListCell<Task>() {
+            private final CheckBox checkBox = new CheckBox();
+            private final Button deleteButton = new Button();
+            private final HBox hbox = new HBox(10);
+            private final Label taskNumberLabel = new Label();
+            private final Label taskTitleLabel = new Label();
+            private final Pane spacer = new Pane();
 
-                    @Override
-                    protected void updateItem(Task item, boolean empty) {
-                        super.updateItem(item, empty);
-                        if (item != null) {
-                            checkBox.setText((getIndex() + 1) + ". " + item.getTitle());
-                            checkBox.setStyle("-fx-text-fill: grey; -fx-font-size: 14px;");
-                            checkBox.setSelected(item.isCompleted());
-                            checkBox.setOnAction(event -> handleTaskUncompletion(item));
-                            deleteImageView.setFitHeight(16);
-                            deleteImageView.setFitWidth(16);
-                            deleteImageView.setOnMouseClicked(event -> handleTaskDeletion(item));
-                            HBox hBox = new HBox(checkBox);
-                            HBox.setHgrow(hBox, Priority.ALWAYS);
-                            hBox.setSpacing(10);
-                            HBox container = new HBox(hBox, deleteImageView);
-                            container.setSpacing(10);
-                            setGraphic(container);
+            {
+                // Set up the delete button
+                Image deleteImage = new Image(getClass().getResourceAsStream("/images/delete.png"));
+                ImageView deleteImageView = new ImageView(deleteImage);
+                deleteImageView.setFitHeight(10);
+                deleteImageView.setFitWidth(10);
+                deleteButton.setGraphic(deleteImageView);
+                deleteButton.setOnAction(event -> {
+                    Task task = getItem();
+                    if (task != null) {
+                        deleteTaskFromDatabase(task);
+                        finishedTaskList.remove(task);
+                    }
+                });
+
+                // Set up the checkbox
+                checkBox.setOnAction(event -> {
+                    Task task = getItem();
+                    if (task != null) {
+                        task.setCompleted(checkBox.isSelected());
+                        if (!task.isCompleted()) {
+                            finishedTaskList.remove(task);
+                            taskList.add(task);
                         } else {
-                            setGraphic(null);
+                            taskList.remove(task);
+                            finishedTaskList.add(task);
                         }
                     }
-                };
+                });
+
+                // Set the spacer to grow and push the delete button to the right
+                HBox.setHgrow(spacer, Priority.ALWAYS);
+
+                // Add elements to the HBox (delete button on the far right)
+                hbox.getChildren().addAll(taskNumberLabel, checkBox, taskTitleLabel, spacer, deleteButton);
+            }
+
+            @Override
+            protected void updateItem(Task task, boolean empty) {
+                super.updateItem(task, empty);
+                if (empty || task == null) {
+                    setText(null);
+                    setGraphic(null);
+                } else {
+                    taskNumberLabel.setText((finishedTaskListView.getItems().indexOf(task) + 1) + ". ");
+                    taskTitleLabel.setText(task.getTitle());
+                    checkBox.setSelected(task.isCompleted());
+                    setGraphic(hbox);
+                }
             }
         });
-
-        // Event handlers for task selection
-        taskListView.setOnMouseClicked(this::handleTaskSelection);
-        finishedTaskListView.setOnMouseClicked(this::handleFinishedTaskSelection);
-
-        // Event handler for user image click
-        userImageView.setOnMouseClicked(this::handleUserImageClick);
     }
 
-    // Method to set the username dynamically after login or registration
-    public void setUsername(String username) {
-        usernameLabel.setText(username); // Set username text in label
+    public void setAuthenticatedUserId(String userId) {
+        this.authenticatedUserId = userId;
+        fetchTasks();
     }
 
     @FXML
     private void handleAddTask() {
-        String title = titleField.getText();
-        String description = descriptionField.getText();
-        String dueDate = dueDateField.getText();
-        String priority = priorityField.getText();
-        String status = statusField.getText();
+        String title = titleField.getText().trim();
+        String description = descriptionField.getText().trim();
+        String dueDate = dueDateField.getText().trim();
+        String priority = priorityField.getText().trim();
+        String status = statusField.getText().trim();
 
-        if (!title.isEmpty()) {
-            Task newTask = new Task(title, description, dueDate, priority, status, false);
-            taskList.add(newTask);
-            clearInputFields();
+        if (title.isEmpty()) {
+            showError("Title is required.");
+            return;
+        }
+
+        try {
+            String requestBody = String.format(
+                    "{\"title\": \"%s\", \"description\": \"%s\", \"dueDate\": \"%s\", \"priority\": \"%s\", \"status\": \"%s\", \"user\": {\"id\": %s}}",
+                    title, description, dueDate, priority, status, authenticatedUserId
+            );
+
+            HttpRequest request = HttpRequest.newBuilder()
+                    .uri(URI.create(BASE_URL + "/task"))
+                    .header("Content-Type", "application/json")
+                    .POST(HttpRequest.BodyPublishers.ofString(requestBody))
+                    .build();
+
+            HttpResponse<String> response = httpClient.send(request, HttpResponse.BodyHandlers.ofString());
+
+            if (response.statusCode() == 201) {
+                fetchTasks();
+                clearInputFields();
+            } else {
+                showError("Failed to create task.");
+            }
+        } catch (Exception e) {
+            showError("An error occurred while creating the task.");
+            e.printStackTrace();
         }
     }
 
-    private void clearInputFields() {
-        titleField.clear();
-        descriptionField.clear();
-        dueDateField.clear();
-        priorityField.clear();
-        statusField.clear();
+    private void fetchTasks() {
+        try {
+            String url = BASE_URL + "/task?userId=" + authenticatedUserId;
+
+            HttpRequest request = HttpRequest.newBuilder()
+                    .uri(URI.create(url))
+                    .GET()
+                    .build();
+
+            HttpResponse<String> response = httpClient.send(request, HttpResponse.BodyHandlers.ofString());
+
+            if (response.statusCode() == 200) {
+                Task[] tasks = objectMapper.readValue(response.body(), Task[].class);
+                taskList.setAll(tasks);
+                taskListView.setItems(taskList);
+                finishedTaskListView.setItems(finishedTaskList);
+            } else {
+                showError("Failed to fetch tasks.");
+            }
+        } catch (Exception e) {
+            showError("An error occurred while fetching tasks.");
+            e.printStackTrace();
+        }
     }
 
     @FXML
     private void handleTaskSelection(MouseEvent event) {
         selectedTask = taskListView.getSelectionModel().getSelectedItem();
-        if (selectedTask != null) {
-            displayTaskDetails(selectedTask);
-        }
-    }
-
-    @FXML
-    private void handleFinishedTaskSelection(MouseEvent event) {
-        selectedTask = finishedTaskListView.getSelectionModel().getSelectedItem();
         if (selectedTask != null) {
             displayTaskDetails(selectedTask);
         }
@@ -184,7 +273,7 @@ public class TaskViewController {
             selectedTask.setPriority(taskPriorityField.getText());
             selectedTask.setStatus(taskStatusField.getText());
 
-            // Refresh the ListViews to reflect changes
+            // Refresh the ListViews
             taskListView.refresh();
             finishedTaskListView.refresh();
 
@@ -192,65 +281,15 @@ public class TaskViewController {
         }
     }
 
-    private void clearTaskDetails() {
-        taskTitleLabel.setText("");
-        taskDescriptionLabel.setText("");
-        taskDueDateField.clear();
-        taskPriorityField.clear();
-        taskStatusField.clear();
-    }
-
-    private void handleTaskCompletion(Task task) {
-        if (taskList.contains(task)) { // Check if the task exists in the list
-            task.setCompleted(true);
-            taskList.remove(task); // Remove the task from the active task list
-            finishedTaskList.add(task); // Add the task to the finished task list
-
-            // Refresh the ListViews to reflect changes
-            taskListView.refresh();
-            finishedTaskListView.refresh();
-
-            clearTaskDetails(); // Clear the task details pane
-        }
-    }
-
-    private void handleTaskUncompletion(Task task) {
-        if (finishedTaskList.contains(task)) { // Check if the task exists in the list
-            task.setCompleted(false);
-            finishedTaskList.remove(task); // Remove the task from the finished task list
-            taskList.add(task); // Add the task back to the active task list
-
-            // Refresh the ListViews to reflect changes
-            taskListView.refresh();
-            finishedTaskListView.refresh();
-
-            clearTaskDetails(); // Clear the task details pane
-        }
-    }
-
-    private void handleTaskDeletion(Task task) {
-        if (taskList.contains(task)) { // Check if the task exists in the active task list
-            taskList.remove(task);
-        } else if (finishedTaskList.contains(task)) { // Check if the task exists in the finished task list
-            finishedTaskList.remove(task);
-        }
-
-        // Refresh the ListViews to reflect changes
-        taskListView.refresh();
-        finishedTaskListView.refresh();
-
-        clearTaskDetails(); // Clear the task details pane
-    }
-
     @FXML
     private void filterTasksByPriority() {
         TextInputDialog dialog = new TextInputDialog();
         dialog.setTitle("Filter by Priority");
-        dialog.setHeaderText("Enter Priority (1-5):");
+        dialog.setHeaderText("Enter Priority (e.g., High, Medium, Low):");
         dialog.setContentText("Priority:");
 
         dialog.showAndWait().ifPresent(priority -> {
-            ObservableList<Task> filteredTasks = taskList.filtered(task -> task.getPriority().equals(priority));
+            ObservableList<Task> filteredTasks = taskList.filtered(task -> task.getPriority().equalsIgnoreCase(priority));
             taskListView.setItems(filteredTasks);
         });
     }
@@ -276,85 +315,51 @@ public class TaskViewController {
         dialog.setContentText("Name:");
 
         dialog.showAndWait().ifPresent(name -> {
-            ObservableList<Task> filteredTasks = taskList.filtered(task -> task.getTitle().toLowerCase().contains(name.toLowerCase()));
+            ObservableList<Task> filteredTasks = taskList.filtered(task -> task.getTitle().toLowerCase() .contains(name.toLowerCase()));
             taskListView.setItems(filteredTasks);
         });
     }
 
-    // Event handler for user image click
-    private void handleUserImageClick(MouseEvent event) {
-        // Display user email and app version in a dialog
-        Alert alert = new Alert(Alert.AlertType.INFORMATION);
-        alert.setTitle("User Information");
-        alert.setHeaderText("User Email: user@example.com");
-        alert.setContentText("Application Version: 9.50.00");
-        alert.showAndWait();
+    private void deleteTaskFromDatabase(Task task) {
+        try {
+            String url = BASE_URL + "/task/" + task.getId();
+
+            HttpRequest request = HttpRequest.newBuilder()
+                    .uri(URI.create(url))
+                    .DELETE()
+                    .build();
+
+            HttpResponse<String> response = httpClient.send(request, HttpResponse.BodyHandlers.ofString());
+
+            if (response.statusCode() != 200) {
+                showError("Failed to delete task.");
+            }
+        } catch (Exception e) {
+            showError("An error occurred while deleting the task.");
+            e.printStackTrace();
+        }
     }
 
-    // Inner class representing a Task
-    public static class Task {
-        private String title;
-        private String description;
-        private String dueDate;
-        private String priority;
-        private String status;
-        private boolean completed;
+    private void clearTaskDetails() {
+        taskTitleLabel.setText("");
+        taskDescriptionLabel.setText("");
+        taskDueDateField.clear();
+        taskPriorityField.clear();
+        taskStatusField.clear();
+    }
 
-        public Task(String title, String description, String dueDate, String priority, String status, boolean completed) {
-            this.title = title;
-            this.description = description;
-            this.dueDate = dueDate;
-            this.priority = priority;
-            this.status = status;
-            this.completed = completed;
-        }
+    private void clearInputFields() {
+        titleField.clear();
+        descriptionField.clear();
+        dueDateField.clear();
+        priorityField.clear();
+        statusField.clear();
+    }
 
-        public String getTitle() {
-            return title;
-        }
-
-        public void setTitle(String title) {
-            this.title = title;
-        }
-
-        public String getDescription() {
-            return description;
-        }
-
-        public void setDescription(String description) {
-            this.description = description;
-        }
-
-        public String getDueDate() {
-            return dueDate;
-        }
-
-        public void setDueDate(String dueDate) {
-            this.dueDate = dueDate;
-        }
-
-        public String getPriority() {
-            return priority;
-        }
-
-        public void setPriority(String priority) {
-            this.priority = priority;
-        }
-
-        public String getStatus() {
-            return status;
-        }
-
-        public void setStatus(String status) {
-            this.status = status;
-        }
-
-        public boolean isCompleted() {
-            return completed;
-        }
-
-        public void setCompleted(boolean completed) {
-            this.completed = completed;
-        }
+    private void showError(String message) {
+        Alert alert = new Alert(Alert.AlertType.ERROR);
+        alert.setTitle("Error");
+        alert.setHeaderText(message);
+        alert.showAndWait();
     }
 }
